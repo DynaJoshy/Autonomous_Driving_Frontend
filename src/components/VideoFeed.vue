@@ -6,62 +6,78 @@
         <h3>Video Feed</h3>
         <div class="monitor-frame">
           <div class="monitor-screen">
-            <p>
-              Live video from the autonomous vehicle's camera will be displayed
-              here.
-            </p>
+            <template v-if="isRealTime">
+              <p>Streaming real-time video...</p>
+            </template>
+            <template v-else>
+              <p>
+                Live video from the autonomous vehicle's camera will be
+                displayed here.
+              </p>
+            </template>
           </div>
           <div class="monitor-stand"></div>
         </div>
-        <!-- Video Upload -->
+
+        <!-- Video Upload or Real-Time Video Toggle -->
         <div class="upload-section">
-          <label for="video-upload" class="upload-button">
-            Upload Video
-            <input
-              type="file"
-              id="video-upload"
-              accept="video/*"
-              @change="handleVideoUpload"
-              hidden
-            />
-          </label>
-          <p v-if="uploadedVideo" class="uploaded-video-name">
-            Uploaded: {{ uploadedVideo }}
-          </p>
+          <button @click="toggleVideoMode" class="toggle-button">
+            Switch to {{ isRealTime ? 'Upload Video' : 'Real-Time Video' }}
+          </button>
+          <template v-if="!isRealTime">
+            <label for="video-upload" class="upload-button">
+              Upload Video
+              <input
+                type="file"
+                id="video-upload"
+                accept="video/*"
+                @change="handleVideoUpload"
+                hidden
+              />
+            </label>
+            <p v-if="uploadedVideo" class="uploaded-video-name">
+              Uploaded: {{ uploadedVideo }}
+            </p>
+          </template>
         </div>
       </div>
 
       <!-- Decisions Monitor -->
       <div class="decision-monitor">
         <h3>Decisions</h3>
-        <ul>
-          <li
-            v-for="(decision, index) in decisions"
-            :key="index"
-            class="decision-item"
-          >
-            {{ decision }}
-          </li>
-        </ul>
+        <p class="decision-item">
+          {{ currentDecision }}
+        </p>
       </div>
     </div>
 
-    <!-- Right Side: Background Image -->
+    <!-- Right Side: Background Video -->
     <div class="background-section">
-      <img
-        src="https://lh3.googleusercontent.com/gg/ACM6BIua7qZBDeCM8vB_Y1kxRGchzJzFPRIVmFnYXxrGC5u3o0nf6-87K08XHtUuQak7G8cl8KQqGZlxdsQ6ODKDQWcbLvc-4vOYnbSp0E6xEWN7eGMTCCitJKYOE3Byby9gLTgpVMY177grGy2uaP3aSHAf2Skv4h0mwkET5UGiYD2wFqwpzOo"
-        alt="Background"
-      />
+      <video
+        v-if="backgroundVideo"
+        :src="backgroundVideo"
+        autoplay
+        loop
+        muted
+        class="background-video"
+      ></video>
+      <template v-else>
+        <div class="placeholder">
+          <p>No background video uploaded.</p>
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
+import backgroundVideoFile from '../assets/car.mp4';
+
 export default {
   name: 'VideoFeed',
   data() {
     return {
-      uploadedVideo: null, // Holds the name of the uploaded video file
+      uploadedVideo: null, // Name of the uploaded video file
       decisions: [
         'Detecting obstacles on the road...',
         'Slowing down due to traffic ahead...',
@@ -74,16 +90,35 @@ export default {
         'Engaging emergency brakes...',
         'Resuming normal speed...',
       ],
+      currentDecisionIndex: 0, // Index of the currently displayed decision
+      isRealTime: false, // Toggle between video upload and real-time video
+      backgroundVideo: backgroundVideoFile, // URL of the uploaded video
     };
+  },
+  computed: {
+    currentDecision() {
+      return this.decisions[this.currentDecisionIndex];
+    },
   },
   methods: {
     handleVideoUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        this.uploadedVideo = file.name; 
-        
+        this.uploadedVideo = file.name;
+        this.backgroundVideo = URL.createObjectURL(file); // Set video as background
       }
     },
+    toggleVideoMode() {
+      this.isRealTime = !this.isRealTime;
+    },
+    cycleDecisions() {
+      this.currentDecisionIndex =
+        (this.currentDecisionIndex + 1) % this.decisions.length;
+    },
+  },
+  mounted() {
+    // Cycle through decisions every 3 seconds
+    setInterval(this.cycleDecisions, 3000);
   },
 };
 </script>
@@ -98,7 +133,7 @@ export default {
   width: 100vw;
   height: 100vh;
   margin: 0;
-  padding: 100;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -110,25 +145,33 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-sizing: border-box;
   color: white;
   overflow: auto;
 }
 
-/* Right Side: Background Image Section */
+/* Right Side: Background Video Section */
 .background-section {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #000;
+  position: relative;
+  overflow: hidden;
 }
 
-.background-section img {
+.background-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+}
+
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+  font-size: 18px;
 }
 
 /* Video Monitor */
@@ -137,12 +180,9 @@ export default {
   background: linear-gradient(145deg, #222, #333);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  text-align: center;
 }
 
 .monitor-frame {
@@ -152,8 +192,6 @@ export default {
   border: 6px solid #444;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
-  position: relative;
-  margin: 0 auto;
 }
 
 .monitor-screen {
@@ -165,9 +203,7 @@ export default {
   align-items: center;
   color: #888;
   font-size: 16px;
-  font-style: italic;
   text-align: center;
-  overflow: hidden;
   border-radius: 4px;
 }
 
@@ -177,7 +213,28 @@ export default {
   background: #444;
   margin: 10px auto 0;
   border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+}
+.upload-section {
+  margin-top: 30px;  /* बटन को नीचे की तरफ खिसकाने के लिए मार्जिन जोड़ा */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;  /* बटन्स के बीच स्पेसिंग */
+}
+
+/* Toggle Button */
+.toggle-button {
+  background-color: #555;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+.toggle-button:hover {
+  background-color: #666;
 }
 
 /* Decisions Monitor */
@@ -186,27 +243,34 @@ export default {
   background: linear-gradient(145deg, #333, #444);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-  overflow-y: auto;
-}
-
-.decision-monitor ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.decision-monitor li {
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #555;
-  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
   color: #ddd;
-  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.decision-monitor li:hover {
-  background-color: #666;
-  transform: scale(1.02);
+/* Custom Scrollbar Styling */
+.ui-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ui-section::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.ui-section::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.ui-section::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Firefox के लिए स्क्रॉलबार स्टाइलिंग */
+.ui-section {
+  scrollbar-width: thin;
+  scrollbar-color: #444 #1a1a1a;
 }
 </style>
