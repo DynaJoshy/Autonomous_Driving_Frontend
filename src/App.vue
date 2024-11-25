@@ -1,27 +1,23 @@
 <template>
-  <div id="app">
-    <video-feed />
-  </div>
+  <router-view></router-view>
 </template>
 
 <script>
-import VideoFeed from './components/VideoFeed.vue';
-
 export default {
-  name: 'App',
-  components: {
-    VideoFeed,
-  },
-};
+  name: 'App'
+}
 </script>
 
 <style>
-/* Global styles for background and layout */
-#app {
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
   box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #121212;
 }
 </style>
