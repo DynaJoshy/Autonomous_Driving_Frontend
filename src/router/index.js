@@ -3,6 +3,7 @@ import VideoFeed from '../components/VideoFeed.vue'
 import About from '../components/About.vue'
 import Timeline from '../components/Timeline.vue'
 import Contact from '../components/Contact.vue'
+import MotivationPage from '../components/MotivationPage.vue'
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
     path: '/contact',
     name: 'Contact',
     component: Contact
+  },
+  {
+    path: '/motivation',
+    name: 'Motivation',
+    component: MotivationPage
   }
 ]
 

@@ -5,9 +5,10 @@
         <h1>Infosys Springboard Internship : 5.0</h1>
         <nav class="nav-bar">
           <router-link to="/" class="nav-link">Home</router-link>
-          <router-link to="/video-feed" class="nav-link">Video Feed</router-link>
           <router-link to="/about" class="nav-link">About</router-link>
+          <router-link to="/motivation" class="nav-link">Motivation</router-link>
           <router-link to="/timeline" class="nav-link">Timeline</router-link>
+
           <router-link to="/contact" class="nav-link">Contact</router-link>
         </nav>
       </div>
@@ -98,12 +99,14 @@
   }
   
   .content {
+    margin-top: 2em;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
   }
   
   .contact-grid {
+    margin-top: 2em;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 40px;
@@ -111,6 +114,7 @@
   }
   
   .contact-form, .contact-info {
+    margin-top: 2em;
     background: linear-gradient(145deg, #222, #333);
     padding: 30px;
     border-radius: 12px;

@@ -5,10 +5,12 @@
         <h1>Infosys Springboard Internship <span class="version">5.0</span></h1>
         <nav class="nav-bar">
           <router-link to="/" class="nav-link">Home</router-link>
-          <router-link to="/video-feed" class="nav-link">Video Feed</router-link>
+          <!-- <router-link to="/video-feed" class="nav-link">Video Feed</router-link> -->
           <router-link to="/about" class="nav-link">About</router-link>
+          <router-link to="/motivation" class="nav-link">Motivation</router-link>     
+
           <router-link to="/timeline" class="nav-link">Timeline</router-link>
-          <router-link to="/contact" class="nav-link">Contact</router-link>
+               <router-link to="/contact" class="nav-link">Contact</router-link>
         </nav>
       </div>
   
@@ -71,6 +73,10 @@
   
   <style scoped>
   .timeline-container {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/4.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     min-height: 100vh;
     background-color: #121212;
     color: white;
@@ -78,12 +84,14 @@
   }
   
   .content {
+    margin-top: 2em;
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
   }
   
   .timeline {
+    margin-top: 2em;
     position: relative;
     padding: 20px 0;
   }
