@@ -40,31 +40,51 @@
     data() {
       return {
         timelineItems: [
-          {
-            title: 'Project Initiation',
-            date: 'September 2024',
-            description: 'Project kickoff and initial planning phase'
-          },
-          {
-            title: 'Design Phase',
-            date: 'November 2024',
-            description: 'UI/UX design and system architecture planning'
-          },
-          {
-            title: 'Development',
-            date: 'September 2024',
-            description: 'Core functionality implementation'
-          },
-          {
-            title: 'Testing',
-            date: 'October 2024',
-            description: 'Model testing and bug fixes'
-          },
-          {
-            title: 'Deployment',
-            date: 'November 2024',
-            description: 'Final deployment and project presentation'
-          }
+        {
+          title: 'Project Planning & Design Phase',
+          date: 'October 2024',
+          description: 'Initial project scope definition, architecture planning, UI/UX design mockups, and technology stack selection. Set up development environment and project repository.'
+        },
+        {
+          title: 'Data Collection & EDA',
+          date: 'October 2024',
+          description: 'Collection of traffic video datasets, data preprocessing, exploratory data analysis, data labeling, and validation of dataset quality.'
+        },
+        {
+          title: 'Model Development - Phase 1',
+          date: 'October 2024',
+          description: 'Implementation of object detection models, semantic segmentation algorithms, and initial training on collected datasets. Performance benchmarking and optimization.'
+        },
+        {
+          title: 'Model Development - Phase 2',
+          date: 'October 2024',
+          description: 'Development of decision-making algorithms, integration of multiple models, implementation of tracking systems, and real-time processing capabilities.'
+        },
+        {
+          title: 'Testing & Validation',
+          date: 'November 2024',
+          description: 'Comprehensive testing of all components, performance evaluation, stress testing, and bug fixes. Integration testing of the complete system.'
+        },
+        {
+          title: 'Frontend Development',
+          date: 'November 2024',
+          description: 'Development of the Vue.js frontend application, implementation of real-time visualization components, and integration with backend services.'
+        },
+        {
+          title: 'System Integration',
+          date: ' 2024',
+          description: 'Integration of ML models with frontend interface, API development, implementation of real-time data processing pipeline, and system optimization.'
+        },
+        {
+          title: 'Quality Assurance',
+          date: 'May 2024',
+          description: 'End-to-end system testing, performance optimization, security testing, and documentation of all components and APIs.'
+        },
+        {
+          title: 'Deployment & Launch',
+          date: 'June 2024',
+          description: 'System deployment to production environment, final performance tuning, monitoring setup, and project documentation completion.'
+        }
         ]
       }
     }

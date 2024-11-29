@@ -20,169 +20,220 @@
           <div class="video-monitor">
             <div class="monitor-frame">
               <div class="monitor-screen">
-                <template v-if="isRealTime">
-                  <p>Streaming real-time video...</p>
-                </template>
-                <template v-else>
-                  <p>Live video from the autonomous vehicle's camera will be displayed here.</p>
-                </template>
+                <video
+                  v-if="currentSemanticVideo"
+                  :src="currentSemanticVideo"
+                  autoplay
+                  muted
+                  loop
+                  class="semantic-video"
+                  ref="semanticVideoPlayer"
+                  @loadeddata="changeVideo"
+                  @error="(e) => console.error('Semantic video error:', e)"
+                ></video>
+                <p v-else>Loading semantic video...</p>
               </div>
               <div class="monitor-stand"></div>
             </div>
 
-            <!-- Video Upload Section -->
-            <div class="upload-section">
-              <button @click="toggleVideoMode" class="toggle-button">
-                Switch to {{ isRealTime ? 'Upload Video' : 'Real-Time Video' }}
-              </button>
-              <template v-if="!isRealTime">
-                <div class="dropdown-upload">
-                  <label for="video-upload" class="upload-button">
-                    Select Upload Option
-                    <select id="video-dropdown" v-model="selectedVideoIndex">
-                      <option v-for="(video, index) in uploadedVideos" :key="index" :value="index">
-                        Video {{ index + 1 }}
-                      </option>
-                    </select>
-                  </label>
-                  <input
-                    type="file"
-                    id="video-upload"
-                    accept="video/*"
-                    @change="handleVideoUpload"
-                    class="hidden-input"
-                  />
-                </div>
-                <div v-for="(video, index) in uploadedVideos" :key="index" class="uploaded-video-name">
-                  <p v-if="video">Video {{ index + 1 }}: {{ video.name }}</p>
-                </div>
-              </template>
+            <!-- Video Selection Section -->
+            <div class="video-controls">
+              <select v-model="selectedVideoIndex" @change="changeVideo" class="video-selector">
+                <option v-for="(_, index) in semanticVideos" :key="index" :value="index">
+                  Semantic Video {{ index + 1 }}
+                </option>
+              </select>
             </div>
           </div>
 
           <!-- Decisions Monitor -->
           <div class="decision-monitor">
-            <h3>Decisions</h3>
-            <p class="decision-item">{{ currentDecision }}</p>
+            <h3>Decisions & Location</h3>
+            <div class="map-container">
+              <div id="map" ref="mapRef"></div>
+            </div>
+            <div class="decision-video-container">
+              <video
+                v-if="currentDecisionVideo"
+                :src="currentDecisionVideo"
+                autoplay
+                class="decision-video"
+                ref="decisionVideoPlayer"
+              ></video>
+              <p v-else>Loading decision video...</p>
+            </div>
           </div>
         </div>
 
-        <!-- Right Side: Background Video -->
+        <!-- Right Side: Background Section -->
         <div class="background-section">
-          <video
-            v-if="backgroundVideo"
-            :src="backgroundVideo"
-            autoplay
-            loop
-            muted
-            class="background-video"
-            @error="handleVideoError"
-          ></video>
-          <template v-else>
-            <div class="placeholder">
-              <p>{{ videoErrorMessage || 'No background video uploaded.' }}</p>
-            </div>
-          </template>
+          <div class="output-video-container">
+            <video
+              v-if="currentOutputVideo"
+              :src="currentOutputVideo"
+              autoplay
+              class="output-video"
+              ref="outputVideoPlayer"
+            ></video>
+            <p v-else>Loading output video...</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
-
 <script>
+// सीधे वीडियो फाइल्स इम्पोर्ट करें
+import semanticVideo1 from '/sv/S1.mp4'
+import semanticVideo2 from '/sv/S2.mp4'
+import semanticVideo3 from '/sv/S3.mp4'
+import semanticVideo4 from '/sv/S4.mp4'
+import semanticVideo5 from '/sv/S5.mp4'
+
+import decisionVideo1 from '/dv/DM_1.mp4'
+import decisionVideo2 from '/dv/DM_2.mp4'
+import decisionVideo3 from '/dv/DM_3.mp4'
+import decisionVideo4 from '/dv/DM_4.mp4'
+import decisionVideo5 from '/dv/DM_5.mp4'
+
+import outputVideo1 from '/ov/01.mp4'
+import outputVideo2 from '/ov/02.mp4'
+import outputVideo3 from '/ov/03.mp4'
+import outputVideo4 from '/ov/04.mp4'
+import outputVideo5 from '/ov/05.mp4'
+
 export default {
   name: 'VideoFeed',
   data() {
     return {
-      isRealTime: false,
-      uploadedVideos: [null, null, null, null, null], // Holds up to 5 uploaded video files
-      selectedVideoIndex: 0, // Tracks the selected dropdown option
-      videoErrorMessage: null,
-      decisions: [
-        'Detecting obstacles on the road...',
-        'Slowing down due to traffic ahead...',
-        'Changing lanes to avoid collision...',
-        'Adjusting speed to match traffic flow...',
-        'Monitoring vehicle surroundings...',
-        'Identifying traffic lights...',
-        'Detecting pedestrians nearby...',
-        'Calculating alternate route...',
-        'Engaging emergency brakes...',
-        'Resuming normal speed...',
+      selectedVideoIndex: 0,
+      semanticVideos: [
+        semanticVideo1,
+        semanticVideo2,
+        semanticVideo3,
+        semanticVideo4,
+        semanticVideo5
       ],
-      currentDecisionIndex: 0,
-      decisionInterval: null,
-    };
+      decisionVideos: [
+        decisionVideo1,
+        decisionVideo2,
+        decisionVideo3,
+        decisionVideo4,
+        decisionVideo5
+      ],
+      map: null,
+      markers: [],
+      dummyLocations: [
+        { lat: 12.9716, lng: 77.5946, title: 'Bangalore' }, // बैंगलोर की लोकेशन
+        { lat: 13.0827, lng: 80.2707, title: 'Chennai' },   // चेन्नई की लोकेशन
+        { lat: 17.3850, lng: 78.4867, title: 'Hyderabad' }  // हैदराबाद की लोकेशन
+      ]
+    }
   },
   computed: {
-    currentDecision() {
-      return this.decisions[this.currentDecisionIndex];
+    currentSemanticVideo() {
+      return this.semanticVideos[this.selectedVideoIndex]
     },
+    currentDecisionVideo() {
+      return this.decisionVideos[this.selectedVideoIndex]
+    }
   },
   methods: {
-    handleVideoUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        // Store the uploaded file in the selected slot
-        this.$set(this.uploadedVideos, this.selectedVideoIndex, file);
-        this.videoErrorMessage = null;
-      } else {
-        this.videoErrorMessage = 'Error uploading video. Please try again.';
+    changeVideo() {
+      this.$nextTick(() => {
+        const semanticVideo = this.$refs.semanticVideoPlayer;
+        const decisionVideo = this.$refs.decisionVideoPlayer;
+        
+        if (semanticVideo) {
+          semanticVideo.load();
+          const playPromise = semanticVideo.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Semantic video playback failed:", error);
+            });
+          }
+        }
+        
+        if (decisionVideo) {
+          decisionVideo.load();
+          const playPromise = decisionVideo.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Decision video playback failed:", error);
+            });
+          }
+        }
+      });
+    },
+    initMap() {
+      // मैप इनिशियलाइज़ करें
+      const mapOptions = {
+        center: { lat: 12.9716, lng: 77.5946 }, // बैंगलोर को सेंटर में रखें
+        zoom: 6,
+        styles: [
+          {
+            "elementType": "geometry",
+            "stylers": [{ "color": "#242f3e" }]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [{ "color": "#242f3e" }]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [{ "color": "#746855" }]
+          }
+        ]
+      };
+
+      this.map = new google.maps.Map(this.$refs.mapRef, mapOptions);
+      
+      // डमी मार्कर्स जोड़ें
+      this.dummyLocations.forEach(location => {
+        const marker = new google.maps.Marker({
+          position: { lat: location.lat, lng: location.lng },
+          map: this.map,
+          title: location.title
+        });
+        
+        this.markers.push(marker);
+      });
+    },
+    updateMapLocation() {
+      // वीडियो चेंज होने पर मैप अपडेट करें
+      if (this.map && this.dummyLocations[this.selectedVideoIndex]) {
+        const newLocation = this.dummyLocations[this.selectedVideoIndex];
+        this.map.panTo({ lat: newLocation.lat, lng: newLocation.lng });
+        this.map.setZoom(12);
       }
-    },
-    toggleVideoMode() {
-      this.isRealTime = !this.isRealTime;
-    },
-    cycleDecisions() {
-      this.currentDecisionIndex = (this.currentDecisionIndex + 1) % this.decisions.length;
-    },
-    handleVideoError(error) {
-      console.error('Video error:', error);
-      this.videoErrorMessage = 'Error playing video. Please try again.';
-    },
-    startDecisionCycle() {
-      this.decisionInterval = setInterval(this.cycleDecisions, 3000);
-    },
-    stopDecisionCycle() {
-      if (this.decisionInterval) {
-        clearInterval(this.decisionInterval);
-      }
-    },
+    }
   },
   mounted() {
-    this.startDecisionCycle();
+    // कंपोनेंट माउंट होने पर वीडियो प्ले करें
+    this.$nextTick(() => {
+      this.changeVideo();
+    });
+    // Google Maps लोड होने के बाद मैप इनिशियलाइज़ करें
+    if (window.google && window.google.maps) {
+      this.initMap();
+    } else {
+      window.initMap = this.initMap;
+    }
   },
-  beforeUnmount() {
-    this.stopDecisionCycle();
-  },
-};
+  watch: {
+    // वीडियो सोर्स बदलने पर नया वीडियो प्ले करें
+    selectedVideoIndex() {
+      this.changeVideo();
+      this.updateMapLocation();
+    }
+  }
+}
 </script>
 
-
-
 <style scoped>
-.hidden-input {
-  display: none;
-}
-
-.dropdown-upload {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.upload-button {
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px;
-  border-radius: 4px;
-}
-
 .main-container {
+  margin-top: 2em;
   min-height: 100vh;
   background-color: #121212;
   padding-top: 80px;
@@ -219,10 +270,6 @@ export default {
   background-color: #333;
 }
 
-.router-link-active {
-  background-color: #4CAF50;
-}
-
 .content-wrapper {
   height: calc(100vh - 80px);
   overflow: hidden;
@@ -240,26 +287,14 @@ export default {
   background-color: #121212;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  color: white;
-  overflow: auto;
-}
-
-.background-section {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #000;
-  position: relative;
-  overflow: hidden;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
 }
 
 .video-monitor {
   background: linear-gradient(145deg, #222, #333);
   border-radius: 12px;
   padding: 20px;
-  margin-top:20px;
 }
 
 .monitor-frame {
@@ -269,19 +304,22 @@ export default {
   background: #333;
   border: 6px solid #444;
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
 }
 
 .monitor-screen {
   width: 100%;
-  height: 300px;
+  height: 500px;
   background: #111;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #888;
-  padding: 20px;
-  text-align: center;
+  overflow: hidden;
+}
+
+.semantic-video, .decision-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .monitor-stand {
@@ -292,48 +330,73 @@ export default {
   border-radius: 4px;
 }
 
-.upload-section {
+.video-controls {
   margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  text-align: center;
 }
 
-.toggle-button, .upload-button {
+.video-selector {
+  padding: 8px 16px;
   background-color: #4CAF50;
   color: white;
-  padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.toggle-button:hover, .upload-button:hover {
-  background-color: #45a049;
 }
 
 .decision-monitor {
   background: linear-gradient(145deg, #222, #333);
   border-radius: 12px;
-  padding: 20px;
+  padding: 30px;
+  color: white;
+  height: 600px;
+  margin-bottom: 20px;
+  overflow: auto;
 }
 
-.background-video {
+.decision-video-container {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 300px;
+  background: #111;
+  margin-top: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.background-section {
+  flex: 1;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .placeholder {
   color: #666;
   text-align: center;
-  padding: 20px;
 }
 
-.uploaded-video-name {
-  color: #4CAF50;
-  font-size: 0.9em;
+.output-video-container {
+  width: 100%;
+  height: 100vh;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.map-container {
+  width: 100%;
+  height: 300px;
+  margin: 15px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  background: #242f3e;
 }
 </style>
