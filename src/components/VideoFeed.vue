@@ -2,241 +2,53 @@
   <div class="main-container">
     <!-- Title and Navigation Section -->
     <div class="title-section">
-      <h1 style="font-size: 1.5em; color: whitesmoke;">Infosys Springboard Internship : 5.0</h1>
+      <h1 style="font-size: 1em; color: #f5f5f5; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 600; letter-spacing: 1px; margin: 20px 0;">Comprehensive Autonomous Driving System</h1>
       <nav class="nav-bar">
         <router-link to="/" class="nav-link">Home</router-link>
-        <router-link to="/about" class="nav-link">About</router-link>
+        <router-link to="/about" class="nav-link">Project</router-link>
         <router-link to="/timeline" class="nav-link">Timeline</router-link>
-        <router-link to="/motivation" class="nav-link">Motivation</router-link>
         <router-link to="/contact" class="nav-link">Contact</router-link>
       </nav>
     </div>
 
-    <!-- Main Content Container -->
-    <div class="content-wrapper">
-      <div class="container">
-        <!-- Left Side: UI Section -->
-        <div class="ui-section">
-          <div class="video-monitor">
-            <div class="monitor-frame">
-              <div class="monitor-screen">
-                <video
-                  v-if="currentSemanticVideo"
-                  :src="currentSemanticVideo"
-                  autoplay
-                  muted
-                  loop
-                  class="semantic-video"
-                  ref="semanticVideoPlayer"
-                  @loadeddata="changeVideo"
-                  @error="(e) => console.error('Semantic video error:', e)"
-                ></video>
-                <p v-else>Loading semantic video...</p>
-              </div>
-              <div class="monitor-stand"></div>
-            </div>
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1>The Future of Driving Technology</h1>
+        <p>Advanced autonomous vehicle system powered by AI and Machine Learning</p>
+        <a href="dashboard.html" class="demo-button">View Demo</a>
+      </div>
+    </div>
 
-            <!-- Video Selection Section -->
-            <div class="video-controls">
-              <select v-model="selectedVideoIndex" @change="changeVideo" class="video-selector">
-                <option v-for="(_, index) in semanticVideos" :key="index" :value="index">
-                  Semantic Video {{ index + 1 }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Decisions Monitor -->
-          <div class="decision-monitor">
-            <h3>Decisions & Location</h3>
-            <div class="map-container">
-              <div id="map" ref="mapRef"></div>
-            </div>
-            <div class="decision-video-container">
-              <video
-                v-if="currentDecisionVideo"
-                :src="currentDecisionVideo"
-                autoplay
-                class="decision-video"
-                ref="decisionVideoPlayer"
-              ></video>
-              <p v-else>Loading decision video...</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Side: Background Section -->
-        <div class="background-section">
-          <div class="output-video-container">
-            <video
-              v-if="currentOutputVideo"
-              :src="currentOutputVideo"
-              autoplay
-              class="output-video"
-              ref="outputVideoPlayer"
-            ></video>
-            <p v-else>Loading output video...</p>
-          </div>
-        </div>
+    <!-- Features Section -->
+    <div class="features-section">
+      <div class="feature-card">
+        <h3>Safe Journey</h3>
+        <p>Advanced safety features with AI-powered decision-making capabilities</p>
+      </div>
+      <div class="feature-card">
+        <h3>Real-time Mapping</h3>
+        <p>Precise navigation with advanced sensors and GPS technology</p>
+      </div>
+      <div class="feature-card">
+        <h3>Smart Decisions</h3>
+        <p>Intelligent decision-making powered by machine learning algorithms</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// सीधे वीडियो फाइल्स इम्पोर्ट करें
-import semanticVideo1 from '/sv/S1.mp4'
-import semanticVideo2 from '/sv/S2.mp4'
-import semanticVideo3 from '/sv/S3.mp4'
-import semanticVideo4 from '/sv/S4.mp4'
-import semanticVideo5 from '/sv/S5.mp4'
-
-import decisionVideo1 from '/dv/DM_1.mp4'
-import decisionVideo2 from '/dv/DM_2.mp4'
-import decisionVideo3 from '/dv/DM_3.mp4'
-import decisionVideo4 from '/dv/DM_4.mp4'
-import decisionVideo5 from '/dv/DM_5.mp4'
-
-import outputVideo1 from '/ov/01.mp4'
-import outputVideo2 from '/ov/02.mp4'
-import outputVideo3 from '/ov/03.mp4'
-import outputVideo4 from '/ov/04.mp4'
-import outputVideo5 from '/ov/05.mp4'
-
 export default {
-  name: 'VideoFeed',
-  data() {
-    return {
-      selectedVideoIndex: 0,
-      semanticVideos: [
-        semanticVideo1,
-        semanticVideo2,
-        semanticVideo3,
-        semanticVideo4,
-        semanticVideo5
-      ],
-      decisionVideos: [
-        decisionVideo1,
-        decisionVideo2,
-        decisionVideo3,
-        decisionVideo4,
-        decisionVideo5
-      ],
-      map: null,
-      markers: [],
-      dummyLocations: [
-        { lat: 12.9716, lng: 77.5946, title: 'Bangalore' }, // बैंगलोर की लोकेशन
-        { lat: 13.0827, lng: 80.2707, title: 'Chennai' },   // चेन्नई की लोकेशन
-        { lat: 17.3850, lng: 78.4867, title: 'Hyderabad' }  // हैदराबाद की लोकेशन
-      ]
-    }
-  },
-  computed: {
-    currentSemanticVideo() {
-      return this.semanticVideos[this.selectedVideoIndex]
-    },
-    currentDecisionVideo() {
-      return this.decisionVideos[this.selectedVideoIndex]
-    }
-  },
-  methods: {
-    changeVideo() {
-      this.$nextTick(() => {
-        const semanticVideo = this.$refs.semanticVideoPlayer;
-        const decisionVideo = this.$refs.decisionVideoPlayer;
-        
-        if (semanticVideo) {
-          semanticVideo.load();
-          const playPromise = semanticVideo.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.error("Semantic video playback failed:", error);
-            });
-          }
-        }
-        
-        if (decisionVideo) {
-          decisionVideo.load();
-          const playPromise = decisionVideo.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.error("Decision video playback failed:", error);
-            });
-          }
-        }
-      });
-    },
-    initMap() {
-      // मैप इनिशियलाइज़ करें
-      const mapOptions = {
-        center: { lat: 12.9716, lng: 77.5946 }, // बैंगलोर को सेंटर में रखें
-        zoom: 6,
-        styles: [
-          {
-            "elementType": "geometry",
-            "stylers": [{ "color": "#242f3e" }]
-          },
-          {
-            "elementType": "labels.text.stroke",
-            "stylers": [{ "color": "#242f3e" }]
-          },
-          {
-            "elementType": "labels.text.fill",
-            "stylers": [{ "color": "#746855" }]
-          }
-        ]
-      };
-
-      this.map = new google.maps.Map(this.$refs.mapRef, mapOptions);
-      
-      // डमी मार्कर्स जोड़ें
-      this.dummyLocations.forEach(location => {
-        const marker = new google.maps.Marker({
-          position: { lat: location.lat, lng: location.lng },
-          map: this.map,
-          title: location.title
-        });
-        
-        this.markers.push(marker);
-      });
-    },
-    updateMapLocation() {
-      // वीडियो चेंज होने पर मैप अपडेट करें
-      if (this.map && this.dummyLocations[this.selectedVideoIndex]) {
-        const newLocation = this.dummyLocations[this.selectedVideoIndex];
-        this.map.panTo({ lat: newLocation.lat, lng: newLocation.lng });
-        this.map.setZoom(12);
-      }
-    }
-  },
-  mounted() {
-    // कंपोनेंट माउंट होने पर वीडियो प्ले करें
-    this.$nextTick(() => {
-      this.changeVideo();
-    });
-    // Google Maps लोड होने के बाद मैप इनिशियलाइज़ करें
-    if (window.google && window.google.maps) {
-      this.initMap();
-    } else {
-      window.initMap = this.initMap;
-    }
-  },
-  watch: {
-    // वीडियो सोर्स बदलने पर नया वीडियो प्ले करें
-    selectedVideoIndex() {
-      this.changeVideo();
-      this.updateMapLocation();
-    }
-  }
+  name: 'VideoFeed'
 }
 </script>
 
 <style scoped>
 .main-container {
-  margin-top: 2em;
+  margin: 0;
   min-height: 100vh;
   background-color: #121212;
-  padding-top: 80px;
 }
 
 .title-section {
@@ -245,7 +57,7 @@ export default {
   left: 0;
   width: 100%;
   background-color: #1a1a1a;
-  padding: 15px 0;
+  padding:0 0;
   text-align: center;
   z-index: 100;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -270,133 +82,87 @@ export default {
   background-color: #333;
 }
 
-.content-wrapper {
+.hero-section {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/Car.png');
   height: calc(100vh - 80px);
-  overflow: hidden;
-}
-
-.container {
   display: flex;
-  width: 100%;
-  height: 100%;
-}
-
-.ui-section {
-  flex: 1;
-  padding: 20px;
-  background-color: #121212;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 100px);
-  overflow-y: auto;
-}
-
-.video-monitor {
-  background: linear-gradient(145deg, #222, #333);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.monitor-frame {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  background: #333;
-  border: 6px solid #444;
-  border-radius: 12px;
-}
-
-.monitor-screen {
-  width: 100%;
-  height: 500px;
-  background: #111;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  overflow: hidden;
-}
-
-.semantic-video, .decision-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.monitor-stand {
-  width: 80px;
-  height: 20px;
-  background: #444;
-  margin: 10px auto 0;
-  border-radius: 4px;
-}
-
-.video-controls {
-  margin-top: 20px;
+  justify-content: center;
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+              url('/Car.png') center/cover;
+  color: white;
   text-align: center;
+  margin-top: 80px;
 }
 
-.video-selector {
-  padding: 8px 16px;
+.hero-content {
+  max-width: 800px;
+  padding: 20px;
+}
+
+.hero-content h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.demo-button {
+  display: inline-block;
+  padding: 15px 40px;
   background-color: #4CAF50;
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  text-decoration: none;
+  border-radius: 30px;
+  font-size: 1.2em;
+  transition: all 0.3s ease;
 }
 
-.decision-monitor {
+.demo-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 50px 20px;
+  background-color: #1a1a1a;
+}
+
+.feature-card {
   background: linear-gradient(145deg, #222, #333);
-  border-radius: 12px;
   padding: 30px;
-  color: white;
-  height: 600px;
-  margin-bottom: 20px;
-  overflow: auto;
-}
-
-.decision-video-container {
-  width: 100%;
-  height: 300px;
-  background: #111;
-  margin-top: 15px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.background-section {
-  flex: 1;
-  background-color: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.placeholder {
-  color: #666;
+  border-radius: 15px;
   text-align: center;
+  color: white;
+  transition: transform 0.3s ease;
 }
 
-.output-video-container {
-  width: 100%;
-  height: 100vh;
-  background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+.feature-card:hover {
+  transform: translateY(-5px);
 }
 
-.map-container {
-  width: 100%;
-  height: 300px;
-  margin: 15px 0;
-  border-radius: 8px;
-  overflow: hidden;
+.feature-card h3 {
+  color: #4CAF50;
+  margin-bottom: 15px;
 }
 
-#map {
-  width: 100%;
-  height: 100%;
-  background: #242f3e;
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2em;
+  }
+  
+  .hero-content p {
+    font-size: 1em;
+  }
+  
+  .features-section {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

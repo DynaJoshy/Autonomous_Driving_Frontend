@@ -42,15 +42,15 @@
             <h3>Get in Touch</h3>
             <div class="info-item">
               <i class="fas fa-map-marker-alt"></i>
-              <p>Sample 123</p>
+              <p>Mr. Nitig Singh</p>
             </div>
             <div class="info-item">
               <i class="fas fa-envelope"></i>
-              <p>contact@project.com</p>
+              <p>springboardmentor0301@gmail.com</p>
             </div>
             <div class="info-item">
               <i class="fas fa-phone"></i>
-              <p>+1 234 567 8900</p>
+              <p>+91 234 567 8900</p>
             </div>
             <div class="social-links">
               <a href="#" class="social-link"><i class="fab fa-github"></i></a>

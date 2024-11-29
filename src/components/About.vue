@@ -1,12 +1,12 @@
 <template>
   <div class="page-container">
     <div class="title-section">
-      <h1 style="font-size: 1.5em;color: blue">Infosys Springboard Internship <span class="version">5.0</span></h1>
+      <h1 style="color: white;">Infosys Springboard Internship : <span class="version">5.0</span></h1>
       <nav class="nav-bar">
         <router-link to="/" class="nav-link">Home</router-link>
         <!-- <router-link to="/video-feed" class="nav-link">Video Feed</router-link> -->
         <router-link to="/about" class="nav-link">About</router-link>
-        <router-link to="/MotivationPage" class="nav-link">Motivation</router-link>
+        <router-link to="/motivation" class="nav-link">Motivation</router-link>  
         <router-link to="/timeline" class="nav-link">Timeline</router-link>
        
         <router-link to="/contact" class="nav-link">Contact</router-link>
@@ -17,15 +17,15 @@
       <div class="chess-grid">
         <div class="info-card slide-up position-1" style="animation-delay: 0.1s">
           <h3>Project Overview</h3>
-          <p style="color: white;">An autonomous vehicle system that uses computer vision and AI to navigate safely through traffic.</p>
+          <p style="color: white;">An autonomous driving system built using basic deep learning (DL) and machine learning (ML) models focuses on enabling a vehicle to navigate and make decisions without human intervention.. Basic ML models, such as decision trees and SVMs, are used for tasks like object detection, classification, and lane tracking. Deep learning models, particularly convolutional neural networks (CNNs), are leveraged for image recognition to identify road signs, pedestrians, and other vehicles. The system integrates these models to continuously interpret the environment and make real-time driving decisions. While these models may not achieve the full complexity of advanced systems, they offer a foundation for autonomous driving in controlled environments.</p>
         </div>
         
         <div class="info-card slide-up position-2" style="animation-delay: 0.2s">
           <h3>Technology Stack</h3>
           <ul>
             <li>Vue.js for Frontend</li>
-            <li>Python for Backend</li>
-            <li>TensorFlow for AI Models</li>
+            <li>Tensorflow  and Keras for Model Development</li>
+      
             <li>OpenCV for Computer Vision</li>
           </ul>
         </div>
@@ -45,8 +45,8 @@
           <ul>
             <li><b style="color: yellowgreen;">Project Guide</b> : Mr. Nitig Singh</li>
             <li><b style="color: yellowgreen;">Project Lead</b>: Faraz,Dyna,Rameshwari,Neela Sai</li>
-            <li>Frontend Developer: [Name]</li>
-            <li>Backend Developer: [Name]</li>
+            <li><b style="color: yellowgreen;">Co-Leads</b>: Srinithi,SriJishnu, Raju</li>
+            <li><b style="color: yellowgreen;">Team Members</b>: Nitesh Kumar, Kishore Kumar, Parvinder Kumar, Adars, Rakshita, Abhishek, Shivanand, Pnv Sai, Deekshitha, Anirwin</li>
           </ul>
         </div>
       </div>
@@ -64,6 +64,10 @@ export default {
 .page-container {
   min-height: 100vh;
   background-color: #121212;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/About.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .content-wrapper {
@@ -190,6 +194,7 @@ export default {
   transition: all 0.3s ease;
   padding-left: 15px;
   position: relative;
+  font-size: 1.2em;
 }
 
 /* Enhanced Hover Effects */

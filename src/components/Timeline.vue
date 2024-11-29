@@ -2,7 +2,7 @@
     <div class="timeline-container">
       <!-- Title Section -->
       <div class="title-section">
-        <h1>Infosys Springboard Internship <span class="version">5.0</span></h1>
+        <h1>Infosys Springboard Internship : <span class="version">5.0</span></h1>
         <nav class="nav-bar">
           <router-link to="/" class="nav-link">Home</router-link>
           <!-- <router-link to="/video-feed" class="nav-link">Video Feed</router-link> -->
@@ -71,18 +71,14 @@
           description: 'Development of the Vue.js frontend application, implementation of real-time visualization components, and integration with backend services.'
         },
         {
-          title: 'System Integration',
-          date: ' 2024',
+          title: 'Model Integration',
+          date: 'November 2024',
           description: 'Integration of ML models with frontend interface, API development, implementation of real-time data processing pipeline, and system optimization.'
         },
-        {
-          title: 'Quality Assurance',
-          date: 'May 2024',
-          description: 'End-to-end system testing, performance optimization, security testing, and documentation of all components and APIs.'
-        },
+        
         {
           title: 'Deployment & Launch',
-          date: 'June 2024',
+          date: 'November 2024',
           description: 'System deployment to production environment, final performance tuning, monitoring setup, and project documentation completion.'
         }
         ]

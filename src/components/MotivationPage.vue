@@ -16,12 +16,12 @@
 
     <!-- Header Section -->
     <div class="title-section">
-      <h1 style="font-size: 1.5em;color:whitesmoke;">Infosys Springboard Internship : 5.0</h1>
+      <h1 style="color: white;">Infosys Springboard Internship : <span class="version">5.0</span></h1>
       <nav class="nav-bar">
         <router-link to="/" class="nav-link">Home</router-link>
         <router-link to="/about" class="nav-link">About</router-link>
-        <router-link to="/timeline" class="nav-link">Timeline</router-link>
-        <router-link to="/motivation" class="nav-link">Motivation</router-link>        
+        <router-link to="/motivation" class="nav-link">Motivation</router-link>   
+        <router-link to="/timeline" class="nav-link">Timeline</router-link>     
         <router-link to="/contact" class="nav-link">Contact</router-link>
       </nav>
     </div>

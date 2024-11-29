@@ -4,12 +4,14 @@ import About from '../components/About.vue'
 import Timeline from '../components/Timeline.vue'
 import Contact from '../components/Contact.vue'
 import MotivationPage from '../components/MotivationPage.vue'
+import Dashboard from '../components/dashboard.vue';
 
 const routes = [
   {
     path: '/',
     redirect: '/video-feed'
   },
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   {
     path: '/video-feed',
     name: 'VideoFeed',
