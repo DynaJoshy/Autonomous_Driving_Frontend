@@ -71,6 +71,7 @@ export default {
 }
 
 .content-wrapper {
+  margin-top:10%;
   padding-top: 100px;
   padding: 100px 20px 20px 20px;
 }
